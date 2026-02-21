@@ -1,4 +1,4 @@
-name: Daily Nature Post and Cleanup
+name:  Nature image 
 
 on:
   schedule:
