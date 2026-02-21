@@ -43,9 +43,8 @@ CAPTIONS = [
     "Lost in the woods.", "The wilderness is where I belong."
 ]
 
-INSTA_HASHTAGS = "#naturephotography #naturelovers #explorepage #instanature #wildlife #earthpix"
-FB_HASHTAGS = "#nature #outdoors #photography #facebooknature #natureguide #greenlife"
-
+INSTA_HASHTAGS = "#explorepage #naturephotography #earthfocus #discoverearth #usanature #exploreamerica"
+FB_HASHTAGS = "#nature #naturelovers #naturephotography #earth #ourplanet #planetearth #earthfocus #earthpix #beautifulnature #mothernature #wildlife #landscape #scenery #outdoorlife #getoutside #greenplanet #discoverearth #americannature #usanature #exploreamerica #viralpost #trendingnow #explorepage #facebookreels"
 def run_automation():
     # 1. Load History
     if os.path.exists(HISTORY_FILE):
