@@ -1,0 +1,36 @@
+name: Daily Nature Post and Cleanup
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Rozana UTC time par
+  workflow_dispatch:
+
+jobs:
+  post_and_clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Automation
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: python main.py
+
+      - name: Commit Changes (History & Deleted Images)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Automation: Post sent, history updated, and old images cleaned" || echo "No changes to commit"
+          git push
