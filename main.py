@@ -92,18 +92,27 @@ def run_automation():
     image_url = f"https://raw.githubusercontent.com/{repo_name}/main/{image_path}"
 
     # 5. Telegram Post (Only Image + Timestamp)
-    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-        print("Sending to Telegram...")
-        
-        # Server time ko automatically Indian Standard Time (IST) mein convert karna
-        ist_now = datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)
-        
-        # Format: DD MONTH HH:MM:SS AM/PM YYYY aur sabko CAPITAL karna
-        time_string = ist_now.strftime("%d %b %I:%M:%S %p %Y").upper()
-        
-        # Sirf bold date aur time, koi title/hashtag nahi
-        telegram_caption = f"<b>{time_string}</b>"
+    # Yeh imports file ke sabse upar hone chahiye
+from datetime import datetime, timedelta
+import requests
 
+# ... (aapka baaki ka code) ...
+
+if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+    print("Sending to Telegram...")
+    
+    # Mistake Fix 1: Agar 'from datetime import datetime' use kiya hai, 
+    # toh sirf datetime.utcnow() aayega, datetime.datetime.utcnow() nahi.
+    ist_now = datetime.utcnow() + timedelta(hours=5, minutes=30)
+    
+    # Format: DD MONTH HH:MM:SS AM/PM YYYY aur sabko CAPITAL karna
+    time_string = ist_now.strftime("%d %b %I:%M:%S %p %Y").upper()
+    
+    # Sirf bold date aur time, HTML format mein
+    telegram_caption = f"<b>{time_string}</b>"
+
+    # Make sure 'video_path' variable upar define kiya gaya ho
+    try:
         with open(video_path, 'rb') as video_file:
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo"
             payload = {
@@ -112,10 +121,19 @@ def run_automation():
                 'parse_mode': 'HTML' # <b> tag se text ko bold karne ke liye zaroori hai
             }
             files = {'video': video_file}
-            try:
-                requests.post(url, data=payload, files=files)
-            except Exception as e:
-                print(f"Telegram Error: {e}")
+            
+            response = requests.post(url, data=payload, files=files)
+            
+            # Mistake Fix 2: API response check karna best practice hai
+            if response.status_code == 200:
+                print("Telegram par video successfully send ho gaya!")
+            else:
+                print(f"Telegram API Error: {response.text}")
+                
+    except FileNotFoundError:
+        print(f"Error: Video file '{video_path}' nahi mili. Path check karein.")
+    except Exception as e:
+        print(f"Request Error: {e}")
 
     # 6. Webhook Post
     webhook_payload = {
